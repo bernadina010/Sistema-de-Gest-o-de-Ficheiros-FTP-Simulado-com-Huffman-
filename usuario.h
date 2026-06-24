@@ -17,4 +17,11 @@ Usuario* criarUtilizador(char username[], char password[]);
 Usuario* login(char username[], char password[]);
 void logout(Usuario **utilizadorAtual);
 
+/*Persistência do usuário*/
+void guardarUtilizador(char username[], char password[]);
+void carregarUtilizadores();
+
+int utilizadorExiste(char username[]);
+void removerUtilizador(char username[], char password[]);
+
 #endif

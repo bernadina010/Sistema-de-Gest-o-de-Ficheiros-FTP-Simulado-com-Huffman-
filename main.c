@@ -7,6 +7,7 @@
 
 int main()
 {
+    carregarUtilizadores();
 
     Usuario *utilizadorAtual = NULL;
     Pasta *diretorioAtual = NULL;
@@ -27,7 +28,8 @@ int main()
 
             printf("1. Criar utilizador\n");
             printf("2. Login\n");
-            printf("3. Sair\n");
+            printf("3. Remover utilizador\n");
+            printf("4. Sair\n");
             printf("--------------------------------------\n");
             printf("Opcao: ");
             scanf("%d", &opcao);
@@ -64,6 +66,20 @@ int main()
             break;
 
             case 3:
+                {
+                    char user[30], pass[30];
+
+                    printf("Username: ");
+                    scanf("%s", user);
+
+                    printf("Password: ");
+                    scanf("%s", pass);
+
+                    removerUtilizador(user, pass);
+                }
+                break;
+
+            case 4:
                 printf("A encerrar sistema...\n");
                 exit(0);
 
