@@ -108,8 +108,14 @@ int main()
             printf("5. Voltar pasta anterior\n");
             printf("6. Abrir ficheiro\n");
             printf("7. Eliminar ficheiro\n");
-            printf("8. Logout\n");
-            printf("9. Sair\n");
+            printf("8. Editar ficheiro\n");
+            printf("9. Eliminar pasta\n");
+            printf("10. Enviar Ficheiro\n");
+            printf("11. Ver ficheiros recebidos\n");
+            printf("12. Comprimir ficheiro\n");
+            printf("13. Descomprimir ficheiro\n");
+            printf("14. Logout\n");
+            printf("15. Sair\n");
             printf("--------------------------------------\n");
             printf("Opcao: ");
             scanf("%d", &opcao);
@@ -274,20 +280,30 @@ int main()
                 }
 
             case 8:
+                break;
+
+            case 9:
+                break;
+            case 10:
+                break;
+            case 11:
+                break;
+            case 12:
+                printf("Saindo...");
+                break;
+            case 13:
+                break;
+            case 14:
                 utilizadorAtual = NULL;
                 diretorioAtual = NULL;
 
                 printf("Logout efetuado!\n");
                 break;
 
-            case 9:
+            case 15:
                 printf("Saindo...");
                 exit(0);
                 break;
-
-            case 10:
-                printf("A encerrar sistema...\n");
-                exit(0);
 
             default:
                 printf("Opcao invalida!\n");
