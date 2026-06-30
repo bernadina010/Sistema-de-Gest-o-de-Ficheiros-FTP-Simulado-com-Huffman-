@@ -30,7 +30,7 @@ int main()
             printf("2. Login\n");
             printf("3. Remover utilizador\n");
             printf("4. Sair\n");
-            printf("--------------------------------------\n");
+            printf("======================================\n");
             printf("Opcao: ");
             scanf("%d", &opcao);
 
@@ -102,27 +102,41 @@ int main()
             printf("======================================\n");
 
             printf("1. Listar conteudo\n");
-            printf("2. Criar ficheiro\n");
-            printf("3. Criar pasta\n");
-            printf("4. Entrar em pasta\n");
-            printf("5. Voltar pasta anterior\n");
-            printf("6. Abrir ficheiro\n");
-            printf("7. Eliminar ficheiro\n");
+            printf("2. Entrar em pasta\n");
+            printf("3. Voltar pasta anterior\n");
+            
+            printf("\n----------------Gestão de Pastas ----------------------\n\n");
+            printf("4. Criar pasta\n");
+            printf("5. Eliminar pasta\n");
+            
+            printf("\n----------------Gestão de Ficheiros -----------------\n\n\n");
+            printf("6. Criar ficheiro\n");
+            printf("7. Abrir ficheiro\n");
             printf("8. Editar ficheiro\n");
-            printf("9. Eliminar pasta\n");
+            printf("9. Eliminar ficheiro\n");
+            
+            printf("\n---------------- Transferências -----------------\n\n\n");
             printf("10. Enviar Ficheiro\n");
             printf("11. Ver ficheiros recebidos\n");
+
+            printf("\n---------------- Comprimir -----------------\n\n\n");
             printf("12. Comprimir ficheiro\n");
             printf("13. Descomprimir ficheiro\n");
+            
+            printf("\n---------------- Sessão -----------------\n\n\n");
             printf("14. Logout\n");
             printf("15. Sair\n");
-            printf("--------------------------------------\n");
-            printf("Opcao: ");
+            
+            printf("======================================\n");
+            printf("Escolha uma opcao: ");
             scanf("%d", &opcao);
 
             switch (opcao)
             {
 
+            // ===================================================
+            //                    NAVEGAÇÃO
+            // ===================================================
             case 1:
                 if (diretorioAtual == NULL)
                 {
@@ -133,53 +147,13 @@ int main()
                 break;
 
             case 2:
-            {
-                char nome[100];
-
-                printf("Nome do ficheiro: ");
-                scanf("%s", nome);
-
-                // criar caminho fictício (simulação storage)
-                char caminho[200];
-                sprintf(caminho, "storage/%s/%s/%s",
-                        utilizadorAtual->username,
-                        diretorioAtual->nome,
-                        nome);
-
-                Ficheiro *novo = criarFicheiro(nome, caminho);
-
-                adicionarFicheiro(&diretorioAtual->ficheiros, novo);
-
-                printf("Ficheiro criado!\n");
-            }
-            break;
-
-            case 3:
+            
                 if (diretorioAtual == NULL)
                 {
                     printf("Erro: nenhum diretorio ativo!\n");
                     break;
                 }
-                {
-                    char nome[50];
 
-                    printf("Nome da pasta: ");
-                    scanf("%s", nome);
-
-                    Pasta *nova = criarPasta(nome, diretorioAtual);
-
-                    adicionarFilho(diretorioAtual, nova);
-
-                    printf("Pasta criada!\n");
-                }
-                break;
-
-            case 4:
-                if (diretorioAtual == NULL)
-                {
-                    printf("Erro: nenhum diretorio ativo!\n");
-                    break;
-                }
                 {
                     char nome[50];
 
@@ -198,9 +172,10 @@ int main()
                         printf("Pasta nao encontrada!\n");
                     }
                 }
-                break;
+            
+            break;
 
-            case 5:
+            case 3:
                 if (diretorioAtual == NULL)
                 {
                     printf("Erro: nenhum diretorio ativo!\n");
@@ -216,14 +191,75 @@ int main()
                     printf("Ja esta na root!\n");
                 }
                 break;
-
-            case 6:
+            
+            // ===================================================
+            //                GESTÃO DE PASTAS
+            // ===================================================
+            case 4:
+                 // Criar pasta
                 if (diretorioAtual == NULL)
                 {
                     printf("Erro: nenhum diretorio ativo!\n");
                     break;
                 }
-                { // Ver conteúdo
+
+                {
+                    char nome[50];
+
+                    printf("Nome da pasta: ");
+                    scanf("%s", nome);
+
+                    Pasta *nova = criarPasta(nome, diretorioAtual);
+
+                    adicionarFilho(diretorioAtual, nova);
+
+                    printf("Pasta criada!\n");
+                }
+                break;
+
+            case 5:
+                // Eliminar pasta
+                printf("Funcionalidade em desenvolvimento...\n");
+                break;
+
+            // ===================================================
+            //              GESTÃO DE FICHEIROS
+            // ===================================================
+            case 6:
+                // Criar ficheiro
+                if (diretorioAtual == NULL)
+                {
+                    printf("Erro: nenhum diretorio ativo!\n");
+                    break;
+                }
+
+                {
+                    char nome[100];
+
+                    printf("Nome do ficheiro: ");
+                    scanf("%s", nome);
+
+                    char caminho[200];
+
+                    sprintf(caminho,"storage/%s/%s/%s", utilizadorAtual->username,diretorioAtual->nome,nome);
+
+                    Ficheiro *novo = criarFicheiro(nome, caminho);
+
+                    adicionarFicheiro(&diretorioAtual->ficheiros, novo);
+
+                    printf("Ficheiro criado!\n");
+                }
+                break;
+
+            case 7:
+                // Abrir ficheiro
+                if (diretorioAtual == NULL)
+                {
+                    printf("Erro: nenhum diretorio ativo!\n");
+                    break;
+                }
+
+                {
                     char nome[100];
 
                     printf("Nome do ficheiro: ");
@@ -233,14 +269,12 @@ int main()
 
                     if (f != NULL)
                     {
-
                         FILE *fp = fopen(f->caminho, "r");
 
                         if (fp == NULL)
                         {
                             printf("Erro ao abrir ficheiro!\n");
                             continue;
-                            ;
                         }
 
                         char linha[256];
@@ -262,13 +296,19 @@ int main()
                     }
                 }
                 break;
+            case 8:
+                // Editar ficheiro
+                printf("Funcionalidade em desenvolvimento...\n");
+                break;
 
-            case 7:
+            case 9:
+                // Eliminar ficheiro
                 if (diretorioAtual == NULL)
                 {
                     printf("Erro: nenhum diretorio ativo!\n");
                     break;
                 }
+
                 {
                     char nome[100];
 
@@ -276,23 +316,36 @@ int main()
                     scanf("%s", nome);
 
                     removerFicheiro(&diretorioAtual->ficheiros, nome);
-                    break;
                 }
-
-            case 8:
                 break;
 
-            case 9:
-                break;
+            // ===================================================
+            //                TRANSFERÊNCIAS
+            // ===================================================
             case 10:
+                // Enviar ficheiro  
+                printf("Funcionalidade em desenvolvimento...\n");
                 break;
             case 11:
+                // Receber ficheiro
+                printf("Funcionalidade em desenvolvimento...\n");   
                 break;
+
+            // ===================================================
+            //                  COMPRESSÃO
+            // ===================================================
             case 12:
-                printf("Saindo...");
+                // Comprimir ficheiro
+                printf("Funcionalidade em desenvolvimento...\n");
                 break;
             case 13:
+                // Descomprimir ficheiro
+                printf("Funcionalidade em desenvolvimento...\n");
                 break;
+
+            // ===================================================
+            //                    SESSÃO
+            // ===================================================    
             case 14:
                 utilizadorAtual = NULL;
                 diretorioAtual = NULL;
