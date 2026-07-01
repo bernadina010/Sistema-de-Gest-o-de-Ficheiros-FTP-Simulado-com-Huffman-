@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "usuario.h"
 #include "pasta.h"
@@ -267,30 +268,50 @@ int main()
                 {
                     if (diretorioAtual == NULL)
                     {
-                        printf("Erro: nenhum diretorio ativo!\n");
+                        printf("Erro: nenhum diretório ativo!\n");
+                        break;
+                    }
+
+                    // Só permitir criação dentro de Documentos
+                    if (strcmp(diretorioAtual->nome, "Documentos") != 0)
+                    {
+                        printf("Erro: só é permitido criar ficheiros dentro de Documentos!\n");
                         break;
                     }
 
                     char nome[100];
-                    char conteudo[500];
+                    char conteudo[256];
 
                     printf("Nome do ficheiro: ");
                     scanf("%s", nome);
 
-                    getchar(); // limpar buffer
+                    // limpar buffer antes do fgets
+                    getchar();
 
-                    printf("Conteudo inicial (linha unica): ");
+                    printf("Conteúdo inicial (pode deixar vazio): ");
                     fgets(conteudo, sizeof(conteudo), stdin);
 
+                    // remover '\n' do fgets
+                    conteudo[strcspn(conteudo, "\n")] = '\0';
+
+                    // criar ficheiro físico + lógico
                     Ficheiro *novo = criarFicheiro(nome, diretorioAtual, conteudo);
 
-                    if (novo != NULL)
+                    if (novo == NULL)
                     {
-                        adicionarFicheiro(&diretorioAtual->ficheiros, novo);
-                        printf("Ficheiro criado com sucesso!\n");
+                        printf("Erro ao criar ficheiro!\n");
+                        break;
                     }
+
+                    // adicionar à lista lógica da pasta
+                    adicionarFicheiro(&diretorioAtual->ficheiros, novo);
+
+                    printf("Ficheiro '%s' criado com sucesso em %s!\n",
+                        nome,
+                        diretorioAtual->caminho);
+
+                    break;
                 }
-                break;
 
             case 7:
                 // Abrir ficheiro
@@ -339,7 +360,28 @@ int main()
                 break;
             case 8:
                 // Editar ficheiro
-                printf("Funcionalidade em desenvolvimento...\n");
+                {
+                    if (diretorioAtual == NULL)
+                    {
+                        printf("Erro: nenhum diretório ativo!\n");
+                        break;
+                    }
+
+                    char nome[100];
+
+                    printf("Nome do ficheiro: ");
+                    scanf("%s", nome);
+
+                    Ficheiro *f = procurarFicheiro(diretorioAtual->ficheiros, nome);
+
+                    if (f == NULL)
+                    {
+                        printf("Ficheiro nao encontrado!\n");
+                        break;
+                    }
+
+                    editarFicheiro(f);
+                }
                 break;
 
             case 9:

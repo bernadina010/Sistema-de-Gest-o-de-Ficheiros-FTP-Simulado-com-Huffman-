@@ -126,3 +126,78 @@ void listarFicheiros(Ficheiro *lista) {
 
     printf("=================\n");
 }
+
+void lerFicheiro(Ficheiro *f)
+{
+    if (f == NULL)
+    {
+        printf("Ficheiro invalido!\n");
+        return;
+    }
+
+    FILE *fp = fopen(f->caminho, "r");
+
+    if (fp == NULL)
+    {
+        printf("Erro ao abrir ficheiro!\n");
+        return;
+    }
+
+    char linha[256];
+
+    printf("\n--- CONTEUDO ATUAL ---\n");
+
+    while (fgets(linha, sizeof(linha), fp))
+    {
+        printf("%s", linha);
+    }
+
+    printf("\n----------------------\n");
+
+    fclose(fp);
+}
+
+void escreverFicheiro(Ficheiro *f, char conteudo[])
+{
+    if (f == NULL)
+    {
+        printf("Ficheiro invalido!\n");
+        return;
+    }
+
+    FILE *fp = fopen(f->caminho, "w");
+
+    if (fp == NULL)
+    {
+        printf("Erro ao escrever no ficheiro!\n");
+        return;
+    }
+
+    fprintf(fp, "%s", conteudo);
+    fclose(fp);
+}
+
+void editarFicheiro(Ficheiro *f)
+{
+    if (f == NULL)
+    {
+        printf("Ficheiro invalido!\n");
+        return;
+    }
+
+    lerFicheiro(f);
+
+    char novoConteudo[1024];
+
+    printf("\nNovo conteudo (substitui o anterior):\n");
+
+    getchar();
+    fgets(novoConteudo, sizeof(novoConteudo), stdin);
+
+    novoConteudo[strcspn(novoConteudo, "\n")] = '\0';
+
+    escreverFicheiro(f, novoConteudo);
+
+    printf("Ficheiro atualizado com sucesso!\n");
+}
+

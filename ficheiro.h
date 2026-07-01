@@ -16,4 +16,8 @@ Ficheiro* procurarFicheiro(Ficheiro *lista, char nome[]);
 void removerFicheiro(Ficheiro **lista, char nome[]);
 void listarFicheiros(Ficheiro *lista);
 
+void lerFicheiro(Ficheiro *f);
+void escreverFicheiro(Ficheiro *f, char conteudo[]);
+void editarFicheiro(Ficheiro *f);
+
 #endif
