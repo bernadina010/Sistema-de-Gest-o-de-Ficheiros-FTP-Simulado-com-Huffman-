@@ -62,6 +62,11 @@ int main()
                 scanf("%s", pass);
 
                 utilizadorAtual = login(user, pass);
+
+                if (utilizadorAtual != NULL)
+                {
+                    diretorioAtual = procurarSubPasta(utilizadorAtual->home, "Documentos");
+                }
             }
             break;
 
@@ -93,14 +98,14 @@ int main()
         {
             if (diretorioAtual == NULL)
             {
-                diretorioAtual = utilizadorAtual->root;
+                diretorioAtual = utilizadorAtual->home;
             }
 
             printf("\n======================================\n");
             printf(" UTILIZADOR: %s\n", utilizadorAtual->username);
             printf(" DIRETORIO: %s\n", diretorioAtual->nome);
             printf("======================================\n");
-
+            printf("0. Ir para HOME\n");
             printf("1. Listar conteudo\n");
             printf("2. Entrar em pasta\n");
             printf("3. Voltar pasta anterior\n");
@@ -137,6 +142,32 @@ int main()
             // ===================================================
             //                    NAVEGAÇÃO
             // ===================================================
+            case 0:
+                {
+                    if (utilizadorAtual == NULL)
+                    {
+                        printf("Erro: nenhum utilizador logado!\n");
+                        break;
+                    }
+
+                    if (diretorioAtual == utilizadorAtual->home)
+                    {
+                        printf("\nJá se encontra na HOME (%s)\n", utilizadorAtual->username);
+
+                        printf("\n[HOME]\n");
+                        listarConteudo(utilizadorAtual->home);
+                    }
+                    else
+                    {
+                        diretorioAtual = utilizadorAtual->home;
+
+                        printf("\nA voltar para HOME...\n");
+
+                        printf("\n[HOME]\n");
+                        listarConteudo(utilizadorAtual->home);
+                    }
+                }
+                break;
             case 1:
                 if (diretorioAtual == NULL)
                 {
@@ -148,32 +179,26 @@ int main()
 
             case 2:
             
-                if (diretorioAtual == NULL)
                 {
-                    printf("Erro: nenhum diretorio ativo!\n");
-                    break;
-                }
+                    char user[30], pass[30];
 
-                {
-                    char nome[50];
+                    printf("Username: ");
+                    scanf("%s", user);
 
-                    printf("Nome da pasta: ");
-                    scanf("%s", nome);
+                    printf("Password: ");
+                    scanf("%s", pass);
 
-                    Pasta *destino = procurarSubPasta(diretorioAtual, nome);
+                    utilizadorAtual = login(user, pass);
 
-                    if (destino != NULL)
+                    if (utilizadorAtual != NULL)
                     {
-                        diretorioAtual = destino;
-                        printf("Entrou na pasta %s\n", nome);
-                    }
-                    else
-                    {
-                        printf("Pasta nao encontrada!\n");
+                        diretorioAtual = procurarSubPasta(utilizadorAtual->home, "Documentos");
+
+                        printf("\nLogin efetuado com sucesso!\n");
+                        printf("Diretorio atual: %s\n", diretorioAtual->nome);
                     }
                 }
-            
-            break;
+                break;
 
             case 3:
                 if (diretorioAtual == NULL)
@@ -219,35 +244,51 @@ int main()
 
             case 5:
                 // Eliminar pasta
-                printf("Funcionalidade em desenvolvimento...\n");
+                {
+                    if (diretorioAtual == NULL)
+                    {
+                        printf("Erro: nenhum diretorio ativo!\n");
+                        break;
+                    }
+
+                    char nome[50];
+
+                    printf("Nome da pasta: ");
+                    scanf("%s", nome);
+
+                    removerPasta(diretorioAtual, nome);
+                }
                 break;
 
             // ===================================================
             //              GESTÃO DE FICHEIROS
             // ===================================================
             case 6:
-                // Criar ficheiro
-                if (diretorioAtual == NULL)
                 {
-                    printf("Erro: nenhum diretorio ativo!\n");
-                    break;
-                }
+                    if (diretorioAtual == NULL)
+                    {
+                        printf("Erro: nenhum diretorio ativo!\n");
+                        break;
+                    }
 
-                {
                     char nome[100];
+                    char conteudo[500];
 
                     printf("Nome do ficheiro: ");
                     scanf("%s", nome);
 
-                    char caminho[200];
+                    getchar(); // limpar buffer
 
-                    sprintf(caminho,"storage/%s/%s/%s", utilizadorAtual->username,diretorioAtual->nome,nome);
+                    printf("Conteudo inicial (linha unica): ");
+                    fgets(conteudo, sizeof(conteudo), stdin);
 
-                    Ficheiro *novo = criarFicheiro(nome, caminho);
+                    Ficheiro *novo = criarFicheiro(nome, diretorioAtual, conteudo);
 
-                    adicionarFicheiro(&diretorioAtual->ficheiros, novo);
-
-                    printf("Ficheiro criado!\n");
+                    if (novo != NULL)
+                    {
+                        adicionarFicheiro(&diretorioAtual->ficheiros, novo);
+                        printf("Ficheiro criado com sucesso!\n");
+                    }
                 }
                 break;
 

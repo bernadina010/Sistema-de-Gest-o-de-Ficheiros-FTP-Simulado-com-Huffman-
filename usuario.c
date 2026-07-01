@@ -60,14 +60,14 @@ Usuario* criarUtilizador(char username[], char password[]) {
 
     /* ÁRVORE LÓGICA */
 
-    novo->root = criarPasta("root", NULL);
+    novo->home= criarPasta(username, NULL);
 
     // pastas obrigatórias
-    Pasta *doc = criarPasta("Documentos", novo->root);
-    Pasta *rec = criarPasta("Recebidos", novo->root);
+    Pasta *doc = criarPasta("Documentos", novo->home);
+    Pasta *rec = criarPasta("Recebidos", novo->home);
 
-    adicionarFilho(novo->root, doc);
-    adicionarFilho(novo->root, rec);
+    adicionarFilho(novo->home, doc);
+    adicionarFilho(novo->home, rec);
 
     novo->proximo = listaUsuarios;
     listaUsuarios = novo;
@@ -129,13 +129,13 @@ static Usuario* criarUtilizadorMemoria(char username[], char password[])
 
     /* recriar árvore lógica */
 
-    novo->root = criarPasta("root", NULL);
+    novo->home = criarPasta(username, NULL);
 
-    Pasta *doc = criarPasta("Documentos", novo->root);
-    Pasta *rec = criarPasta("Recebidos", novo->root);
+    Pasta *doc = criarPasta("Documentos", novo->home);
+    Pasta *rec = criarPasta("Recebidos", novo->home);
 
-    adicionarFilho(novo->root, doc);
-    adicionarFilho(novo->root, rec);
+    adicionarFilho(novo->home, doc);
+    adicionarFilho(novo->home, rec);
 
     novo->proximo = listaUsuarios;
     listaUsuarios = novo;

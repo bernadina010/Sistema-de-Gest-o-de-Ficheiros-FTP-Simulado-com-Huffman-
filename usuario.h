@@ -7,7 +7,7 @@ typedef struct Usuario {
     char username[30];
     char password[30];
 
-    struct Pasta *root;
+    struct Pasta *home;
 
     struct Usuario *proximo;
 } Usuario;

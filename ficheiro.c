@@ -1,22 +1,53 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
+#include "pasta.h"
 #include "ficheiro.h"
 
-Ficheiro* criarFicheiro(char nome[], char caminho[]) {
-
+Ficheiro* criarFicheiro(char nome[], Pasta *diretorio, char conteudo[])
+{
+    // =========================
+    // CRIAR NÓ LÓGICO
+    // =========================
     Ficheiro *novo = (Ficheiro*) malloc(sizeof(Ficheiro));
 
     strcpy(novo->nome, nome);
-    strcpy(novo->caminho, caminho);
 
-    novo->tamanho = 0;
+    size_t max = sizeof(novo->caminho);
+
+    if (snprintf(novo->caminho, max, "%s/%s", diretorio->caminho, nome) >= max)
+    {
+        printf("Erro: caminho do ficheiro demasiado longo!\n");
+        free(novo);
+        return NULL;
+    }
+
     novo->prox = NULL;
+
+    // =========================
+    // CRIAR FICHEIRO FÍSICO
+    // =========================
+    FILE *fp = fopen(novo->caminho, "w");
+
+    if (fp == NULL)
+    {
+        printf("Erro ao criar ficheiro no disco!\n");
+        free(novo);
+        return NULL;
+    }
+
+    // escrever conteúdo inicial
+    if (conteudo != NULL)
+    {
+        fprintf(fp, "%s", conteudo);
+    }
+
+    fclose(fp);
+
+    printf("Ficheiro criado em: %s\n", novo->caminho);
 
     return novo;
 }
-
 void adicionarFicheiro(Ficheiro **lista, Ficheiro *novo) {
 
     if (*lista == NULL) {
