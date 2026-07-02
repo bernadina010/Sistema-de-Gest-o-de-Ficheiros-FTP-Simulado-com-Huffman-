@@ -79,16 +79,25 @@ Usuario* criarUtilizador(char username[], char password[]) {
     return novo;
 }
 
-Usuario* login(char username[], char password[]) {
-
+Usuario* login(char username[], char password[])
+{
     Usuario *aux = listaUsuarios;
 
-    while (aux != NULL) {
-
+    while (aux != NULL)
+    {
         if (strcmp(aux->username, username) == 0 &&
-            strcmp(aux->password, password) == 0) {
-
+            strcmp(aux->password, password) == 0)
+        {
             printf("Login efetuado com sucesso!\n");
+
+            // 🔥 AQUI É O PONTO CRÍTICO
+            char caminhoBase[200];
+
+            snprintf(caminhoBase, sizeof(caminhoBase),
+                     "%s", aux->username);
+
+            aux->home = carregarDiretorio(caminhoBase, NULL);
+
             return aux;
         }
 
@@ -98,7 +107,6 @@ Usuario* login(char username[], char password[]) {
     printf("Erro: login invalido!\n");
     return NULL;
 }
-
 void logout(Usuario **utilizadorAtual) {
 
     *utilizadorAtual = NULL;

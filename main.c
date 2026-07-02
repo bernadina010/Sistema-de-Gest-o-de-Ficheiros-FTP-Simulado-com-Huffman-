@@ -179,28 +179,25 @@ int main()
                 break;
 
             case 2:
-            
                 {
-                    char user[30], pass[30];
+                    char nome[50];
 
-                    printf("Username: ");
-                    scanf("%s", user);
+                    printf("Nome da pasta: ");
+                    scanf("%49s", nome);
 
-                    printf("Password: ");
-                    scanf("%s", pass);
+                    Pasta *destino = procurarSubPasta(diretorioAtual, nome);
 
-                    utilizadorAtual = login(user, pass);
-
-                    if (utilizadorAtual != NULL)
+                    if (destino != NULL)
                     {
-                        diretorioAtual = procurarSubPasta(utilizadorAtual->home, "Documentos");
-
-                        printf("\nLogin efetuado com sucesso!\n");
-                        printf("Diretorio atual: %s\n", diretorioAtual->nome);
+                        diretorioAtual = destino;
+                        printf("Entrou na pasta %s\n", diretorioAtual->nome);
+                    }
+                    else
+                    {
+                        printf("Pasta nao encontrada!\n");
                     }
                 }
                 break;
-
             case 3:
                 if (diretorioAtual == NULL)
                 {
@@ -229,7 +226,13 @@ int main()
                     break;
                 }
 
-                {
+                {   
+                    if (diretorioAtual == utilizadorAtual->home)
+                    {
+                        printf("Erro: as pastas só podem ser criadas dentro de Documentos.\n");
+                        break;
+                    }
+
                     char nome[50];
 
                     printf("Nome da pasta: ");
@@ -249,6 +252,12 @@ int main()
                     if (diretorioAtual == NULL)
                     {
                         printf("Erro: nenhum diretorio ativo!\n");
+                        break;
+                    }
+
+                    if (diretorioAtual == utilizadorAtual->home)
+                    {
+                        printf("Erro: não é permitido remover pastas da HOME.\n");
                         break;
                     }
 
@@ -272,10 +281,9 @@ int main()
                         break;
                     }
 
-                    // Só permitir criação dentro de Documentos
-                    if (strcmp(diretorioAtual->nome, "Documentos") != 0)
+                    if (!estaDentroDeDocumentos(diretorioAtual))
                     {
-                        printf("Erro: só é permitido criar ficheiros dentro de Documentos!\n");
+                        printf("Erro: só é permitido criar ficheiros dentro de Documentos ou de suas subpastas!\n");
                         break;
                     }
 

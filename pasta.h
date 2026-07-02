@@ -1,7 +1,7 @@
 #ifndef PASTA_H
 #define PASTA_H
 
-// Forward declaration (evita dependência circular com ficheiro.h)
+
 typedef struct Ficheiro Ficheiro;
 
 typedef struct Pasta {
@@ -15,7 +15,7 @@ typedef struct Pasta {
     Ficheiro *ficheiros;
 } Pasta;
 //Funções
-Pasta* criarPasta(char nome[], Pasta *pai);
+Pasta* criarPasta(const char *nome, Pasta *pai);
 
 void adicionarFilho(Pasta *pai, Pasta *filho);
 
@@ -24,5 +24,9 @@ Pasta* procurarSubPasta(Pasta *pai, char nome[]);
 void listarConteudo(Pasta *pasta);
 
 int removerPasta(Pasta *pai, char nome[]);
+
+int estaDentroDeDocumentos(Pasta *pasta);
+
+Pasta* carregarDiretorio(const char *caminho, Pasta *pai);
 
 #endif

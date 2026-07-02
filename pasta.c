@@ -3,11 +3,13 @@
 #include <string.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <dirent.h>
+#include <unistd.h>
 
 #include "pasta.h"
 #include "ficheiro.h"
 
-Pasta* criarPasta(char nome[], Pasta *pai)
+Pasta* criarPasta(const char *nome, Pasta *pai)
 {
     Pasta *nova = (Pasta*) malloc(sizeof(Pasta));
 
@@ -107,7 +109,7 @@ void listarConteudo(Pasta *pasta) {
     }
 
     while (auxF != NULL) {
-        printf(" - %s\n", auxF->nome);
+        printf(" - %s (%ld bytes)\n", auxF->nome, auxF->tamanho);
         auxF = auxF->prox;
     }
 
@@ -167,4 +169,97 @@ int removerPasta(Pasta *pai, char nome[])
 
     printf("Erro: pasta nao encontrada!\n");
     return 0;
+}
+int estaDentroDeDocumentos(Pasta *pasta)
+{
+    while (pasta != NULL)
+    {
+        if (strcmp(pasta->nome, "Documentos") == 0)
+            return 1;
+
+        pasta = pasta->pai;
+    }
+
+    return 0;
+}
+
+Pasta* carregarDiretorio(const char *caminho, Pasta *pai)
+{
+    DIR *dir = opendir(caminho);
+    if (!dir)
+    {
+        return NULL;
+    }
+
+    // 🔥 extrai nome do diretório de forma segura
+    const char *nomeDir = strrchr(caminho, '/');
+    nomeDir = nomeDir ? nomeDir + 1 : caminho;
+
+    Pasta *atual = criarPasta(nomeDir, pai);
+
+    // manter caminho físico correto
+    strcpy(atual->caminho, caminho);
+
+    struct dirent *entrada;
+
+    while ((entrada = readdir(dir)) != NULL)
+    {
+        if (strcmp(entrada->d_name, ".") == 0 ||
+            strcmp(entrada->d_name, "..") == 0)
+            continue;
+
+        char caminhoCompleto[1024];
+        snprintf(caminhoCompleto, sizeof(caminhoCompleto),
+                 "%s/%s", caminho, entrada->d_name);
+
+        struct stat st;
+
+        if (stat(caminhoCompleto, &st) == -1)
+            continue;
+
+        // =========================
+        // É DIRETÓRIO
+        // =========================
+        if (S_ISDIR(st.st_mode))
+        {
+            Pasta *filho = carregarDiretorio(caminhoCompleto, atual);
+
+            if (filho != NULL)
+            {
+                adicionarFilho(atual, filho);
+            }
+        }
+
+        // =========================
+        // É FICHEIRO
+        // =========================
+        else
+        {
+            Ficheiro *f = (Ficheiro*) malloc(sizeof(Ficheiro));
+
+            strcpy(f->nome, entrada->d_name);
+            strcpy(f->caminho, caminhoCompleto);
+
+            // calcular tamanho real do ficheiro
+            fseek(fopen(caminhoCompleto, "r"), 0, SEEK_END);
+            FILE *fp = fopen(caminhoCompleto, "r");
+
+            if (fp != NULL)
+            {
+                fseek(fp, 0, SEEK_END);
+                f->tamanho = ftell(fp);
+                fclose(fp);
+            }
+            else
+            {
+                f->tamanho = 0;
+            }
+
+            f->prox = atual->ficheiros;
+            atual->ficheiros = f;
+        }
+    }
+
+    closedir(dir);
+    return atual;
 }

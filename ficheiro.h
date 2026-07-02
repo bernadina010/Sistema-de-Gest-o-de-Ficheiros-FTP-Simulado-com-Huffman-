@@ -19,5 +19,7 @@ void listarFicheiros(Ficheiro *lista);
 void lerFicheiro(Ficheiro *f);
 void escreverFicheiro(Ficheiro *f, char conteudo[]);
 void editarFicheiro(Ficheiro *f);
+int ficheiroExiste(Pasta *diretorio, char nome[]);
+long obterTamanhoFicheiro(FILE *fp);
 
 #endif

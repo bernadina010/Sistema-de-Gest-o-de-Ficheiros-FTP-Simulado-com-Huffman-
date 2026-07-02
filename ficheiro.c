@@ -4,8 +4,30 @@
 #include "pasta.h"
 #include "ficheiro.h"
 
-Ficheiro* criarFicheiro(char nome[], Pasta *diretorio, char conteudo[])
+int ficheiroExiste(Pasta *diretorio, char nome[])
 {
+    Ficheiro *aux = diretorio->ficheiros;
+
+    while (aux != NULL)
+    {
+        if (strcmp(aux->nome, nome) == 0)
+        {
+            return 1;
+        }
+
+        aux = aux->prox;
+    }
+
+    return 0;
+}
+
+Ficheiro* criarFicheiro(char nome[], Pasta *diretorio, char conteudo[])
+{   
+    if (ficheiroExiste(diretorio, nome))
+    {
+        printf("Erro: já existe um ficheiro com esse nome nesta pasta!\n");
+        return NULL;
+    }
     // =========================
     // CRIAR NÓ LÓGICO
     // =========================
@@ -41,6 +63,8 @@ Ficheiro* criarFicheiro(char nome[], Pasta *diretorio, char conteudo[])
     {
         fprintf(fp, "%s", conteudo);
     }
+    fflush(fp);
+    novo->tamanho = obterTamanhoFicheiro(fp);
 
     fclose(fp);
 
@@ -48,6 +72,18 @@ Ficheiro* criarFicheiro(char nome[], Pasta *diretorio, char conteudo[])
 
     return novo;
 }
+
+long obterTamanhoFicheiro(FILE *fp)
+{
+    long tamanho;
+
+    fseek(fp, 0, SEEK_END);
+    tamanho = ftell(fp);
+    rewind(fp);
+
+    return tamanho;
+}
+
 void adicionarFicheiro(Ficheiro **lista, Ficheiro *novo) {
 
     if (*lista == NULL) {
@@ -96,6 +132,10 @@ void removerFicheiro(Ficheiro **lista, char nome[]) {
                 anterior->prox = aux->prox;
             }
 
+            if (remove(aux->caminho) != 0)
+            {
+                printf("Aviso: nao foi possivel remover o ficheiro do disco.\n");
+            }
             free(aux);
             printf("Ficheiro removido com sucesso!\n");
             return;
@@ -174,7 +214,17 @@ void escreverFicheiro(Ficheiro *f, char conteudo[])
     }
 
     fprintf(fp, "%s", conteudo);
+
+    fflush(fp);
     fclose(fp);
+
+    FILE *fp2 = fopen(f->caminho, "r");
+
+    if (fp2 != NULL)
+    {
+        f->tamanho = obterTamanhoFicheiro(fp2);
+        fclose(fp2);
+    }
 }
 
 void editarFicheiro(Ficheiro *f)
@@ -197,6 +247,14 @@ void editarFicheiro(Ficheiro *f)
     novoConteudo[strcspn(novoConteudo, "\n")] = '\0';
 
     escreverFicheiro(f, novoConteudo);
+
+    FILE *fp = fopen(f->caminho, "r");
+
+    if (fp != NULL)
+    {
+        f->tamanho = obterTamanhoFicheiro(fp);
+        fclose(fp);
+    }
 
     printf("Ficheiro atualizado com sucesso!\n");
 }
