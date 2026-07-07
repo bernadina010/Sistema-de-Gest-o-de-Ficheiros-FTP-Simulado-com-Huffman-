@@ -245,3 +245,20 @@ void removerUtilizador(char username[], char password[])
 
     printf("Utilizador nao encontrado!\n");
 }
+
+Usuario* procurarUsuario(char username[])
+{
+    Usuario *aux = listaUsuarios;
+
+    while(aux != NULL)
+    {
+        if(strcmp(aux->username, username) == 0)
+        {
+            return aux;
+        }
+
+        aux = aux->proximo;
+    }
+
+    return NULL;
+}

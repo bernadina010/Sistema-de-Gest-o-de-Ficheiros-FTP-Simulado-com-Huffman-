@@ -29,4 +29,5 @@ int estaDentroDeDocumentos(Pasta *pasta);
 
 Pasta* carregarDiretorio(const char *caminho, Pasta *pai);
 
+Pasta* procurarPastaRecibidos(Pasta *home);
 #endif

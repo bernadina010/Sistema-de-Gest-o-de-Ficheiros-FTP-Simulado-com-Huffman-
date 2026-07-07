@@ -24,4 +24,6 @@ void carregarUtilizadores();
 int utilizadorExiste(char username[]);
 void removerUtilizador(char username[], char password[]);
 
+Usuario* procurarUsuario(char username[]);
+
 #endif

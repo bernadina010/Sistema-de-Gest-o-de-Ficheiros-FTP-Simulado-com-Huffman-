@@ -259,3 +259,75 @@ void editarFicheiro(Ficheiro *f)
     printf("Ficheiro atualizado com sucesso!\n");
 }
 
+Ficheiro* registarFicheiroExistente(Pasta *diretorio,char nome[],char caminho[])
+{
+    if (ficheiroExiste(diretorio, nome))
+    {
+        printf("Erro: ja existe um ficheiro com esse nome nesta pasta!\n");
+        return NULL;
+    }
+
+    Ficheiro *novo = (Ficheiro*) malloc(sizeof(Ficheiro));
+
+    if (novo == NULL)
+    {
+        printf("Erro ao alocar memoria!\n");
+        return NULL;
+    }
+
+    snprintf(novo->nome,sizeof(novo->nome),"%s",nome);
+    snprintf(novo->caminho,sizeof(novo->caminho),"%s",caminho);
+    FILE *fp = fopen(caminho, "rb");
+
+    if (fp == NULL)
+    {
+        printf("Erro ao abrir o ficheiro comprimido!\n");
+        free(novo);
+        return NULL;
+    }
+
+    novo->tamanho = obterTamanhoFicheiro(fp);
+    fclose(fp);
+    novo->prox = NULL;
+    return novo;
+}
+
+int copiarFicheiro(char origem[], char destino[])
+{
+    FILE *entrada = fopen(origem, "rb");
+
+    if(entrada == NULL)
+    {
+        printf("Erro ao abrir ficheiro origem!\n");
+        return 0;
+    }
+
+
+    FILE *saida = fopen(destino, "wb");
+
+
+    if(saida == NULL)
+    {
+        fclose(entrada);
+        printf("Erro ao criar destino!\n");
+        return 0;
+    }
+
+
+    char buffer[4096];
+
+    size_t bytes;
+
+
+    while((bytes = fread(buffer,1,sizeof(buffer),entrada)) > 0)
+    {
+        fwrite(buffer,1,bytes,saida);
+    }
+
+
+    fclose(entrada);
+    fclose(saida);
+
+
+    return 1;
+}

@@ -5,6 +5,7 @@
 #include "usuario.h"
 #include "pasta.h"
 #include "ficheiro.h"
+#include "huffman.h"
 
 int main()
 {
@@ -72,18 +73,18 @@ int main()
             break;
 
             case 3:
-                {
-                    char user[30], pass[30];
+            {
+                char user[30], pass[30];
 
-                    printf("Username: ");
-                    scanf("%s", user);
+                printf("Username: ");
+                scanf("%s", user);
 
-                    printf("Password: ");
-                    scanf("%s", pass);
+                printf("Password: ");
+                scanf("%s", pass);
 
-                    removerUtilizador(user, pass);
-                }
-                break;
+                removerUtilizador(user, pass);
+            }
+            break;
 
             case 4:
                 printf("A encerrar sistema...\n");
@@ -110,17 +111,17 @@ int main()
             printf("1. Listar conteudo\n");
             printf("2. Entrar em pasta\n");
             printf("3. Voltar pasta anterior\n");
-            
+
             printf("\n----------------Gestão de Pastas ----------------------\n\n");
             printf("4. Criar pasta\n");
             printf("5. Eliminar pasta\n");
-            
+
             printf("\n----------------Gestão de Ficheiros -----------------\n\n\n");
             printf("6. Criar ficheiro\n");
             printf("7. Abrir ficheiro\n");
             printf("8. Editar ficheiro\n");
             printf("9. Eliminar ficheiro\n");
-            
+
             printf("\n---------------- Transferências -----------------\n\n\n");
             printf("10. Enviar Ficheiro\n");
             printf("11. Ver ficheiros recebidos\n");
@@ -128,11 +129,11 @@ int main()
             printf("\n---------------- Comprimir -----------------\n\n\n");
             printf("12. Comprimir ficheiro\n");
             printf("13. Descomprimir ficheiro\n");
-            
+
             printf("\n---------------- Sessão -----------------\n\n\n");
             printf("14. Logout\n");
             printf("15. Sair\n");
-            
+
             printf("======================================\n");
             printf("Escolha uma opcao: ");
             scanf("%d", &opcao);
@@ -140,35 +141,33 @@ int main()
             switch (opcao)
             {
 
-            // ===================================================
             //                    NAVEGAÇÃO
-            // ===================================================
             case 0:
+            {
+                if (utilizadorAtual == NULL)
                 {
-                    if (utilizadorAtual == NULL)
-                    {
-                        printf("Erro: nenhum utilizador logado!\n");
-                        break;
-                    }
-
-                    if (diretorioAtual == utilizadorAtual->home)
-                    {
-                        printf("\nJá se encontra na HOME (%s)\n", utilizadorAtual->username);
-
-                        printf("\n[HOME]\n");
-                        listarConteudo(utilizadorAtual->home);
-                    }
-                    else
-                    {
-                        diretorioAtual = utilizadorAtual->home;
-
-                        printf("\nA voltar para HOME...\n");
-
-                        printf("\n[HOME]\n");
-                        listarConteudo(utilizadorAtual->home);
-                    }
+                    printf("Erro: nenhum utilizador logado!\n");
+                    break;
                 }
-                break;
+
+                if (diretorioAtual == utilizadorAtual->home)
+                {
+                    printf("\nJá se encontra na HOME (%s)\n", utilizadorAtual->username);
+
+                    printf("\n[HOME]\n");
+                    listarConteudo(utilizadorAtual->home);
+                }
+                else
+                {
+                    diretorioAtual = utilizadorAtual->home;
+
+                    printf("\nA voltar para HOME...\n");
+
+                    printf("\n[HOME]\n");
+                    listarConteudo(utilizadorAtual->home);
+                }
+            }
+            break;
             case 1:
                 if (diretorioAtual == NULL)
                 {
@@ -179,25 +178,25 @@ int main()
                 break;
 
             case 2:
+            {
+                char nome[50];
+
+                printf("Nome da pasta: ");
+                scanf("%49s", nome);
+
+                Pasta *destino = procurarSubPasta(diretorioAtual, nome);
+
+                if (destino != NULL)
                 {
-                    char nome[50];
-
-                    printf("Nome da pasta: ");
-                    scanf("%49s", nome);
-
-                    Pasta *destino = procurarSubPasta(diretorioAtual, nome);
-
-                    if (destino != NULL)
-                    {
-                        diretorioAtual = destino;
-                        printf("Entrou na pasta %s\n", diretorioAtual->nome);
-                    }
-                    else
-                    {
-                        printf("Pasta nao encontrada!\n");
-                    }
+                    diretorioAtual = destino;
+                    printf("Entrou na pasta %s\n", diretorioAtual->nome);
                 }
-                break;
+                else
+                {
+                    printf("Pasta nao encontrada!\n");
+                }
+            }
+            break;
             case 3:
                 if (diretorioAtual == NULL)
                 {
@@ -214,19 +213,17 @@ int main()
                     printf("Ja esta na root!\n");
                 }
                 break;
-            
-            // ===================================================
+
             //                GESTÃO DE PASTAS
-            // ===================================================
             case 4:
-                 // Criar pasta
+                // Criar pasta
                 if (diretorioAtual == NULL)
                 {
                     printf("Erro: nenhum diretorio ativo!\n");
                     break;
                 }
 
-                {   
+                {
                     if (diretorioAtual == utilizadorAtual->home)
                     {
                         printf("Erro: as pastas só podem ser criadas dentro de Documentos.\n");
@@ -270,56 +267,54 @@ int main()
                 }
                 break;
 
-            // ===================================================
             //              GESTÃO DE FICHEIROS
-            // ===================================================
             case 6:
+            {
+                if (diretorioAtual == NULL)
                 {
-                    if (diretorioAtual == NULL)
-                    {
-                        printf("Erro: nenhum diretório ativo!\n");
-                        break;
-                    }
-
-                    if (!estaDentroDeDocumentos(diretorioAtual))
-                    {
-                        printf("Erro: só é permitido criar ficheiros dentro de Documentos ou de suas subpastas!\n");
-                        break;
-                    }
-
-                    char nome[100];
-                    char conteudo[256];
-
-                    printf("Nome do ficheiro: ");
-                    scanf("%s", nome);
-
-                    // limpar buffer antes do fgets
-                    getchar();
-
-                    printf("Conteúdo inicial (pode deixar vazio): ");
-                    fgets(conteudo, sizeof(conteudo), stdin);
-
-                    // remover '\n' do fgets
-                    conteudo[strcspn(conteudo, "\n")] = '\0';
-
-                    // criar ficheiro físico + lógico
-                    Ficheiro *novo = criarFicheiro(nome, diretorioAtual, conteudo);
-
-                    if (novo == NULL)
-                    {
-                        printf("Erro ao criar ficheiro!\n");
-                        break;
-                    }
-
-                    // adicionar à lista lógica da pasta
-                    adicionarFicheiro(&diretorioAtual->ficheiros, novo);
-
-                    printf("Ficheiro '%s' criado com sucesso em %s!\n",
-                        nome,
-                        diretorioAtual->caminho);
-
+                    printf("Erro: nenhum diretório ativo!\n");
                     break;
                 }
+
+                if (!estaDentroDeDocumentos(diretorioAtual))
+                {
+                    printf("Erro: só é permitido criar ficheiros dentro de Documentos ou de suas subpastas!\n");
+                    break;
+                }
+
+                char nome[100];
+                char conteudo[256];
+
+                printf("Nome do ficheiro: ");
+                scanf("%s", nome);
+
+                // limpar buffer antes do fgets
+                getchar();
+
+                printf("Conteúdo inicial (pode deixar vazio): ");
+                fgets(conteudo, sizeof(conteudo), stdin);
+
+                // remover '\n' do fgets
+                conteudo[strcspn(conteudo, "\n")] = '\0';
+
+                // criar ficheiro físico + lógico
+                Ficheiro *novo = criarFicheiro(nome, diretorioAtual, conteudo);
+
+                if (novo == NULL)
+                {
+                    printf("Erro ao criar ficheiro!\n");
+                    break;
+                }
+
+                // adicionar à lista lógica da pasta
+                adicionarFicheiro(&diretorioAtual->ficheiros, novo);
+
+                printf("Ficheiro '%s' criado com sucesso em %s!\n",
+                       nome,
+                       diretorioAtual->caminho);
+
+                break;
+            }
 
             case 7:
                 // Abrir ficheiro
@@ -410,33 +405,173 @@ int main()
                 }
                 break;
 
-            // ===================================================
-            //                TRANSFERÊNCIAS
-            // ===================================================
+            //TRANSFERÊNCIAS
             case 10:
-                // Enviar ficheiro  
-                printf("Funcionalidade em desenvolvimento...\n");
+                {
+                    char nomeFicheiro[100];
+                    char usuarioDestino[30];
+
+                    printf("\nNome do ficheiro a transferir: ");
+                    scanf("%99s", nomeFicheiro);
+
+                    // Procurar ficheiro na pasta atual
+                    Ficheiro *f =cprocurarFicheiro(diretorioAtual->ficheiros,nomeFicheiro);
+
+                    if(f == NULL)
+                    {
+                        printf("Ficheiro nao encontrado!\n");
+                        break;
+                    }
+
+                    printf("Utilizador destino: ");
+                    scanf("%29s", usuarioDestino);
+
+                    Usuario *destino =ccprocurarUsuario(usuarioDestino);
+                    if(destino == NULL)
+                    {
+                        printf("Utilizador destino nao existe!\n");
+                        break;
+                    }
+                    Pasta *recebidos =(procurarPastaRecibidos(destino->home));
+
+                    if(recebidos == NULL)
+                    {
+                        printf("Pasta Recebidos nao encontrada!\n");
+                        break;
+                    }
+
+                    // Criar caminho destino
+                    char caminhoDestino[1024];
+                    snprintf(caminhoDestino,sizeof(caminhoDestino),"%s/%s",recebidos->caminho,f->nome);
+
+                    // Copiar ficheiro físico
+                    if(!copiarFicheiro(f->caminho,caminhoDestino))
+                    {
+                        printf("Erro ao transferir ficheiro!\n");
+                        break;
+                    }
+
+                    // Criar nó lógico no destino
+                    Ficheiro *novo = registarFicheiroExistente(recebidos,f->nome,caminhoDestino);
+                }
                 break;
             case 11:
                 // Receber ficheiro
-                printf("Funcionalidade em desenvolvimento...\n");   
+                {
+                    if (utilizadorAtual == NULL)
+                    {
+                        printf("Erro: nenhum utilizador autenticado!\n");
+                        break;
+                    }
+
+                    Pasta *recebidos = procurarPastaRecibidos(utilizadorAtual->home);
+
+                    if (recebidos == NULL)
+                    {
+                        printf("Pasta Recebidos nao encontrada!\n");
+                        break;
+                    }
+
+                    printf("\n===== FICHEIROS RECEBIDOS =====\n");
+                    listarConteudo(recebidos);
+                    printf("===============================\n");
+                }
                 break;
 
-            // ===================================================
-            //                  COMPRESSÃO
-            // ===================================================
+            //COMPRESSÃO
             case 12:
-                // Comprimir ficheiro
-                printf("Funcionalidade em desenvolvimento...\n");
-                break;
-            case 13:
-                // Descomprimir ficheiro
-                printf("Funcionalidade em desenvolvimento...\n");
-                break;
+            {
+                char nome[100];
+                printf("\nNome do ficheiro a comprimir: ");
+                scanf("%99s", nome);
 
-            // ===================================================
-            //                    SESSÃO
-            // ===================================================    
+                Ficheiro *f = procurarFicheiro(diretorioAtual->ficheiros,nome);
+
+                if (f == NULL)
+                {
+                    printf("Ficheiro nao encontrado!\n");
+                    break;
+                }
+
+                char nomeComprimido[120];
+                snprintf(nomeComprimido,sizeof(nomeComprimido),"%s.huff",f->nome);
+
+                if (ficheiroExiste(diretorioAtual, nomeComprimido))
+                {
+                    printf("Ja existe um ficheiro comprimido com esse nome!\n");
+                    break;
+                }
+
+                char caminhoDestino[1024];
+                snprintf(caminhoDestino,sizeof(caminhoDestino),"%s/%s",diretorioAtual->caminho,nomeComprimido);
+
+                // Compressão
+                comprimirFicheiro(f->caminho,caminhoDestino);
+
+                Ficheiro *novo =registarFicheiroExistente(diretorioAtual,nomeComprimido,caminhoDestino);
+
+                if (novo != NULL)
+                {
+                    adicionarFicheiro(
+                        &diretorioAtual->ficheiros,
+                        novo
+                    );
+                }
+                printf("\nFicheiro comprimido com sucesso!\n");
+                printf("Destino: %s\n", caminhoDestino);
+
+            }
+            break;
+            case 13:
+                
+            // Descomprimir ficheiro
+            {
+                char nome[100];
+
+                printf("\nNome do ficheiro .huff a descomprimir: ");
+                scanf("%99s", nome);
+
+                // Procurar ficheiro comprimido na pasta atual
+                Ficheiro *f = procurarFicheiro(diretorioAtual->ficheiros,nome);
+
+                if(f == NULL)
+                {
+                    printf("Ficheiro nao encontrado!\n");
+                    break;
+                }
+
+                // Criar nome do ficheiro recuperado
+                char nomeRecuperado[100];
+                strcpy(nomeRecuperado,nome);
+
+                char *ext = strstr(nomeRecuperado,".huff");
+
+                if(ext != NULL)
+                {
+                    *ext = '\0';
+                }
+
+                strcat(nomeRecuperado,"_recuperado.txt");
+
+                // Criar caminho físico
+                char caminhoDestino[1024];
+                snprintf(caminhoDestino,sizeof(caminhoDestino),"%s/%s",diretorioAtual->caminho,nomeRecuperado);
+
+                // Descompressão
+                descomprimirFicheiro(f->caminho,caminhoDestino);
+
+                // Registar novo ficheiro no sistema
+                Ficheiro *novo = registarFicheiroExistente(diretorioAtual,nomeRecuperado,caminhoDestino);
+
+                if(novo != NULL)
+                {
+                    adicionarFicheiro(&diretorioAtual->ficheiros,novo);
+                }
+                printf("Ficheiro recuperado com sucesso: %s\n",nomeRecuperado);
+            }
+            break;
+
+            //SESSÃO
             case 14:
                 utilizadorAtual = NULL;
                 diretorioAtual = NULL;

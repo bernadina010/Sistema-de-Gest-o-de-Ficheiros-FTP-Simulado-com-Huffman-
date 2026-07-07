@@ -263,3 +263,27 @@ Pasta* carregarDiretorio(const char *caminho, Pasta *pai)
     closedir(dir);
     return atual;
 }
+
+Pasta* procurarPastaRecibidos(Pasta *home)
+{
+    if(home == NULL)
+        return NULL;
+
+
+    Pasta *aux = home->primeiroFilho;
+
+
+    while(aux != NULL)
+    {
+        if(strcmp(aux->nome, "Recebidos") == 0)
+        {
+            return aux;
+        }
+
+
+        aux = aux->proximoIrmao;
+    }
+
+
+    return NULL;
+}

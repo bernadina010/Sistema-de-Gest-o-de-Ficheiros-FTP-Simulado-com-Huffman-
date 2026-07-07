@@ -21,5 +21,7 @@ void escreverFicheiro(Ficheiro *f, char conteudo[]);
 void editarFicheiro(Ficheiro *f);
 int ficheiroExiste(Pasta *diretorio, char nome[]);
 long obterTamanhoFicheiro(FILE *fp);
+Ficheiro* registarFicheiroExistente(Pasta *diretorio,char nome[],char caminho[]);
+int copiarFicheiro(char origem[], char destino[]);
 
 #endif
