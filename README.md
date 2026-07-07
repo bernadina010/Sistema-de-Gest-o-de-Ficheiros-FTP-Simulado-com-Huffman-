@@ -1,173 +1,357 @@
-# Sistema de Gestão de Ficheiros (FTP Simulado com Huffman)
+# Sistema de Gestão de Ficheiros FTP Simulado com Compressão Huffman
 
-Projeto desenvolvido para a disciplina de **Estruturas de Dados II**, implementado na linguagem **C**, simulando um sistema de gestão de ficheiros inspirado no funcionamento de um servidor FTP.
+## Descrição do Projeto
 
-O sistema permite a gestão de utilizadores, diretórios e ficheiros, recorrendo a estruturas de dados dinâmicas e manipulação de ficheiros, culminando com a implementação de compressão através do algoritmo de Huffman.
+Este projeto consiste no desenvolvimento de um **Sistema de Gestão de Ficheiros inspirado num servidor FTP simulado**, desenvolvido em linguagem C.
 
-> ⚠️ Estado atual: Projeto em desenvolvimento.
+O sistema permite a criação e gestão de utilizadores, organização hierárquica de diretórios, criação e manipulação de ficheiros, transferência de ficheiros entre utilizadores e compressão/descompressão através do **algoritmo de Huffman**.
+
+O projeto foi desenvolvido no âmbito da unidade curricular de **Estruturas de Dados II**, aplicando conceitos como:
+
+- Tipos Abstratos de Dados (TADs);
+- Listas ligadas;
+- Árvores;
+- Heap mínimo;
+- Manipulação de ficheiros;
+- Alocação dinâmica de memória;
+- Algoritmos de compressão sem perdas.
+
 
 ---
 
 # Objetivos
 
-- Aplicar Estruturas de Dados na resolução de um problema real.
-- Desenvolver um sistema modular utilizando TADs.
-- Trabalhar com ficheiros reais.
-- Implementar persistência de dados.
-- Simular a transferência de ficheiros entre utilizadores.
-- Implementar compressão e descompressão utilizando Huffman.
+Os principais objetivos do projeto são:
+
+- Desenvolver um sistema de gestão de ficheiros utilizando estruturas de dados dinâmicas;
+- Simular o funcionamento básico de um sistema FTP;
+- Implementar uma organização hierárquica de pastas;
+- Garantir persistência dos dados;
+- Permitir comunicação entre utilizadores através da transferência de ficheiros;
+- Implementar compressão e descompressão utilizando o algoritmo de Huffman.
+
 
 ---
 
-# 🛠 Tecnologias
+# Arquitetura do Sistema
 
-- Linguagem C
-- GCC
-- Git
-- GitHub
-- GitHub Codespaces
-
----
-
-# 📂 Estrutura atual do projeto
+O sistema foi organizado através de uma arquitetura modular, dividida nos seguintes TADs:
 
 ```
-SistemaGestaoFicheiros/
+                 MAIN
 
+                  |
+  -----------------------------------
+  |              |          |        |
+Usuario        Pasta    Ficheiro  Huffman
+
+  |              |          |        |
+Login       Diretórios  Arquivos  Compressão
+Gestão      Árvore      Listas    Descompressão
+```
+
+Esta organização permite separar responsabilidades, facilitando a manutenção, testes e evolução do sistema.
+
+
+---
+
+# Estrutura do Projeto
+
+```
+Sistema-de-Gestao-de-Ficheiros/
+
+│
 ├── main.c
+│
 ├── usuario.c
 ├── usuario.h
+│
 ├── pasta.c
 ├── pasta.h
+│
 ├── ficheiro.c
 ├── ficheiro.h
+│
+├── huffman.c
+├── huffman.h
+│
 ├── utilizadores.txt
+│
 └── README.md
 ```
 
 ---
 
-# 🧱 Estruturas de Dados utilizadas
+#  Gestão de Utilizadores
+
+O módulo de utilizadores permite:
+
+- Criar novos utilizadores;
+- Efetuar autenticação através de login;
+- Terminar sessão;
+- Remover utilizadores;
+- Guardar e carregar utilizadores através de ficheiros de persistência.
+
+
+Cada utilizador possui uma diretoria principal (`home`) onde são armazenados os seus ficheiros e pastas.
+
+Estrutura inicial:
+
+```
+Utilizador
+
+└── Home
+    |
+    ├── Documentos
+    |
+    └── Recebidos
+```
+
+---
+
+#  Gestão de Diretórios
+
+A gestão de pastas é baseada numa estrutura de **árvore hierárquica**, semelhante à utilizada pelos sistemas operativos.
+
+Cada pasta possui:
+
+- Nome;
+- Caminho físico;
+- Referência para a pasta pai;
+- Primeiro filho;
+- Próximo irmão;
+- Lista de ficheiros.
+
+
+Funcionalidades implementadas:
+
+- Criar pastas;
+- Criar subpastas;
+- Navegar entre diretórios;
+- Listar conteúdo;
+- Remover pastas.
+
+
+Exemplo:
+
+```
+Home
+
+├── Documentos
+│      |
+│      └── trabalho.txt
+│
+└── Recebidos
+       |
+       └── ficheiro_recebido.txt
+```
+
+---
+
+#  Gestão de Ficheiros
+
+O módulo de ficheiros permite:
+
+- Criar ficheiros;
+- Guardar conteúdo inicial;
+- Editar ficheiros;
+- Ler ficheiros;
+- Listar ficheiros;
+- Controlar o armazenamento físico.
+
+
+Cada ficheiro contém:
+
+- Nome;
+- Tamanho;
+- Caminho físico;
+- Referência para o próximo ficheiro.
+
+
+---
+
+#  Transferência de Ficheiros
+
+O sistema permite a transferência de ficheiros entre utilizadores.
+
+O processo realizado é:
+
+1. O utilizador seleciona um ficheiro;
+2. Indica o utilizador destinatário;
+3. O sistema copia o ficheiro físico;
+4. O ficheiro é registado na pasta `Recebidos` do destinatário.
+
+
+Exemplo:
+
+```
+Utilizador A
+
+Documentos
+    |
+    └── relatorio.txt
+
+
+            Transferência
+
+
+Utilizador B
+
+Recebidos
+    |
+    └── relatorio.txt
+```
+
+---
+
+#  Compressão Huffman
+
+O módulo `huffman.c` e `huffman.h` implementa um algoritmo de compressão **sem perdas baseado na codificação de Huffman**.
+
+O processo de compressão é composto pelas seguintes etapas:
+
+## 1. Contagem de Frequências
+
+O sistema analisa o ficheiro original e calcula a frequência de ocorrência de cada caractere.
+
+
+## 2. Construção do Heap Mínimo
+
+As frequências obtidas são utilizadas para criar um Heap Mínimo, permitindo selecionar sempre os elementos com menor frequência.
+
+
+## 3. Construção da Árvore de Huffman
+
+A partir do Heap é construída a árvore binária de Huffman, onde cada caminho representa um código binário.
+
+
+## 4. Geração dos Códigos
+
+Cada caractere recebe um código binário único baseado no percurso realizado na árvore.
+
+
+## 5. Criação do ficheiro comprimido
+
+O conteúdo original é convertido para a sequência de bits correspondente e armazenado num novo ficheiro:
+
+```
+exemplo.txt
+
+      ↓
+
+exemplo.txt.huff
+```
+
+---
+
+#  Descompressão Huffman
+
+A descompressão permite recuperar o conteúdo original através de:
+
+1. Leitura do cabeçalho do ficheiro comprimido;
+2. Reconstrução da árvore de Huffman;
+3. Leitura dos bits armazenados;
+4. Percurso da árvore;
+5. Recuperação dos caracteres originais.
+
+
+O sistema garante que o ficheiro recuperado possui o mesmo conteúdo do ficheiro inicial.
+
+
+---
+
+#  Estruturas de Dados Utilizadas
 
 ## Lista Ligada
 
 Utilizada para:
 
-- Utilizadores
-- Ficheiros
-- Subpastas
+- Armazenamento de utilizadores;
+- Lista de ficheiros dentro das pastas.
+
+
+## Árvore
+
+Utilizada para:
+
+- Representação dos diretórios;
+- Construção da árvore de Huffman.
+
+
+## Heap Mínimo
+
+Utilizado no algoritmo de Huffman para organizar os nós pela menor frequência.
+
 
 ---
 
-## Árvore Geral
+#  Tecnologias Utilizadas
 
-Utilizada para representar a estrutura lógica de diretórios.
+- Linguagem C;
+- Estruturas de Dados;
+- Ponteiros;
+- Gestão dinâmica de memória;
+- Manipulação de ficheiros;
+- Git/GitHub.
 
-```
-root
-├── Documentos
-│   ├── Faculdade
-│   └── Fotos
-└── Recebidos
-```
-
-Cada pasta pode possuir:
-
-- várias subpastas;
-- vários ficheiros;
-- referência para a pasta pai.
 
 ---
 
-# ✅ Funcionalidades implementadas
+#  Compilação
 
-## Gestão de Utilizadores
+Para compilar o projeto:
 
-- [x] Criar utilizador
-- [x] Login
-- [x] Logout
-- [x] Persistência em ficheiro (`utilizadores.txt`)
-- [x] Carregamento automático dos utilizadores
-- [x] Impedir utilizadores duplicados
-- [x] Remover utilizador
-- [x] Remover pasta física do utilizador
-
----
-
-## Gestão de Pastas
-
-- [x] Criação da árvore lógica
-- [x] Pasta Root
-- [x] Pasta Documentos
-- [x] Pasta Recebidos
-- [x] Criar pasta
-- [x] Navegação entre pastas
-- [x] Listar conteúdo
-
----
-
-# 🚧 Funcionalidades em desenvolvimento
-
-## Gestão de Ficheiros
-
-- [ ] Criar ficheiro
-- [ ] Abrir ficheiro
-- [ ] Editar ficheiro
-- [ ] Remover ficheiro
-
----
-
-## Transferência de Ficheiros
-
-- [ ] Enviar ficheiro
-- [ ] Receber ficheiro
-- [ ] Visualizar ficheiros recebidos
-
----
-
-## Compressão
-
-- [ ] Compressão Huffman
-- [ ] Descompressão Huffman
-
----
-
-# 📋 Menu principal
-
-## Sem utilizador autenticado
-
-```
-1. Criar utilizador
-2. Login
-3. Remover utilizador
-4. Sair
+```bash
+gcc main.c usuario.c pasta.c ficheiro.c huffman.c -o sistema
 ```
 
----
+Executar:
 
-## Com utilizador autenticado
+```bash
+./sistema
+```
 
-```
-1. Listar conteúdo
-2. Criar ficheiro
-3. Criar pasta
-4. Entrar em pasta
-5. Remover pasta
-6. Voltar pasta anterior
-7. Eliminar ficheiro
-8. Editar ficheiro
-9. Eliminar pasta
-10. Enviar Ficheiro
-11. Ver ficheiros recebidos
-12. Comprimir ficheiro
-13. Descomprimir ficheiro
-14. Logout
-15. Sair
-```
 
 ---
 
+#  Testes Realizados
 
-# Estado do projeto
+Foram realizados testes para validar:
 
-🚧 Em desenvolvimento.
+✔ Criação de utilizadores;  
+✔ Login e logout;  
+✔ Persistência dos dados;  
+✔ Criação de pastas;  
+✔ Criação e edição de ficheiros;  
+✔ Transferência entre utilizadores;  
+✔ Visualização de ficheiros recebidos;  
+✔ Compressão Huffman;  
+✔ Descompressão e recuperação dos ficheiros originais.
+
+
+---
+
+#  Bibliografia
+
+- CORMEN, Thomas H.; LEISERSON, Charles E.; RIVEST, Ronald L.; STEIN, Clifford.  
+  *Introduction to Algorithms*. 4th Edition. MIT Press, 2022.
+
+- SALOMON, David; MOTTA, Giovanni.  
+  *Handbook of Data Compression*. 5th Edition. Springer, 2010.
+
+- WEISS, Mark Allen.  
+  *Data Structures and Algorithm Analysis in C*. 2nd Edition. Addison-Wesley, 1997.
+
+- BASS, Len; CLEMENTS, Paul; KAZMAN, Rick.  
+  *Software Architecture in Practice*. 4th Edition. Addison-Wesley Professional, 2021.
+
+
+---
+
+#  Conclusão
+
+O desenvolvimento deste projeto permitiu aplicar conceitos fundamentais de programação estruturada e estruturas de dados na criação de um sistema completo de gestão de ficheiros.
+
+A implementação das estruturas de árvores, listas ligadas e Heap Mínimo possibilitou representar de forma eficiente a organização dos dados, enquanto o algoritmo de Huffman demonstrou uma aplicação prática de compressão de dados sem perdas.
+
+O resultado final é um sistema modular, funcional e preparado para futuras expansões.
